@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Tasks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/person.css') }}">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="team-name">SYNKTRA</div>
+    <nav class="nav-links">
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <h2>Welcome, {{ username }}</h2>
+    <h3>My Assigned Tasks</h3>
+
+    {% if tasks %}
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Pole ID</th>
+            <th>Location</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Evidence</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+            <tr>
+              <td>{{ task.pole_id }}</td>
+              <td>{{ task.location }}</td>
+              <td>{{ task.due }}</td>
+              <td>{{ task.status }}</td>
+              <td>
+                {% if task.image %}
+                  <a href="{{ url_for('static', filename=task.image.split('static/')[-1]) }}" target="_blank">View</a>
+                {% else %}
+                  No evidence yet
+                {% endif %}
+              </td>
+              <td>
+                {% if task.status == "Assigned" %}
+                  <form action="{{ url_for('staff_tasks', username=username) }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="pole_id" value="{{ task.pole_id }}">
+                    <input type="file" name="evidence" accept="image/*" required>
+                    <button type="submit">Upload & Complete</button>
+                  </form>
+                {% else %}
+                  ✔ Completed
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No tasks assigned yet.</p>
+    {% endif %}
+  </main>
+</body>
+</html>
